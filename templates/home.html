@@ -56,7 +56,7 @@
         <div class="slide">
 
             <a href="{{ url_for('product_detail', product_id=p[0]) }}">
-                <img src="{{ url_for('static', filename='images/' + p[3]) }}">
+                <img src="{{ p[3]|image_url }}">
             </a>
 
         </div>
@@ -81,11 +81,11 @@
 
     <div class="container">
          
-        {% for p in all_products %}
+        {% for p in products %}
         <div class="card">
 
             <a href="{{ url_for('product_detail', product_id=p[0]) }}">
-                <img src="{{ url_for('static', filename='images/' + p[3]) }}" width="120">
+                <img src="{{ p[3]|image_url }}" width="120">
                 <h3>{{ p[1] }}</h3>
                 <p>₦{{ p[2] }}</p>
             </a>

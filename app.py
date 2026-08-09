@@ -6,13 +6,19 @@ import cloudinary.uploader
 
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session,url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
 load_dotenv()
 
 app = Flask(__name__)
+
+@app.template_filter("image_url")
+def image_url(image):
+    if image.startswith("http://") or image.startswith("https://"):
+        return image
+    return url_for("static", filename="images/" + image)
 
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -332,7 +338,7 @@ def home():
     all_products = c.fetchall()
 
     # FEATURED (only 6)
-    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC LIMIT 6")
+    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC LIMIT 12")
     featured = c.fetchall()
 
     conn.close()
