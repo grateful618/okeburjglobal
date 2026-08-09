@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OKEBURJ GLOBALFASHION</title>
+	
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS LINK (VERY IMPORTANT) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+     
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"> 
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+	<h1 class="site-title">OKEBURJ GLOBAL FASHION PLACE</h1>
+    <p class="site-subtitle">Your Trusted Fashion Store</p>
+</header>
+
+<nav class="navbar">
+    <a href="/">Home</a>
+    <a href="{{ url_for('menu_page') }}">Products</a>
+    <a href="/about">About us</a>
+	<form action="{{ url_for('menu_page') }}" method="GET" class="search-form">
+    <input type="text" name="q" placeholder="Search products...">
+    <button type="submit">Search</button>
+</form>
+    
+</nav>
+
+<!-- HERO -->
+<section class="hero-banner">
+
+    <a href="{{ url_for('menu_page') }}" class="hero-link">      
+
+    <img src="{{ url_for('static', filename='images/hero-banner.png') }}"
+         alt="Okeburjglobal Hero Banner"
+         class="hero-banner-img">
+	 
+	 
+	 <div class="shop-overlay ">
+            🛍️ Shop Our Collection →
+     </div>	 
+		 
+</section>
+
+    <!-- SLIDER -->
+<section class="carousel">
+    <div class="carousel-track">
+
+        {% for p in all_products %}
+        <div class="slide">
+
+            <a href="{{ url_for('product_detail', product_id=p[0]) }}">
+                <img src="{{ url_for('static', filename='images/' + p[3]) }}">
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="featured-section">
+    
+	<div class="featured-heading">
+	 
+	     <h2 class="featured-title">
+		       Featured Products
+		 </h2>
+
+    
+    </div>	
+	
+	 
+
+    <div class="container">
+         
+        {% for p in all_products %}
+        <div class="card">
+
+            <a href="{{ url_for('product_detail', product_id=p[0]) }}">
+                <img src="{{ url_for('static', filename='images/' + p[3]) }}" width="120">
+                <h3>{{ p[1] }}</h3>
+                <p>₦{{ p[2] }}</p>
+            </a>
+
+            <a href="https://wa.me/2349159894649?text=I want to order {{ p[1] }}">
+                <button>Order on WhatsApp</button>
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<section id="contact" class="contact-footer">
+ <h2>Contact Us</h2>
+    <p>We’d love to hear from you</p>
+
+    <div class="contact-box">
+
+        <div class="contact-info">
+            <p>📍 Lagos, Nigeria</p>
+            <p>📞 +234 915 989 4649</p>
+            <p>📧 support@okeburj@gmail.com</p>
+        </div>
+
+        <div class="contact-action">
+            <a href="https://wa.me/2349159894649" target="_blank">
+                <button>Chat on WhatsApp</button>
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+
+<!-- OPTIONAL: MORE CONTENT BELOW -->
+
+
+
+
+</body>
+</html>

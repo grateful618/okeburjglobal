@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Us - Okeburj Fashion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="contact-header">
+    <h1>Contact Us</h1>
+    <p>We are here to help you 24/7</p>
+</header>
+
+<nav class="navbar">
+    <a href="/">Home</a>
+    <a href="/menu">Products</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+</nav>
+
+<section class="contact-container">
+
+    <!-- CONTACT INFO -->
+    <div class="contact-info">
+        <h2>Get in Touch</h2>
+
+        <p>📍 Lagos, Nigeria</p>
+        <p>📞 +234 915 989 4649</p>
+        <p>📧 support@okeburj@gmail.com</p>
+
+        <a href="https://wa.me/2349159894649" target="_blank">
+            <button class="whatsapp-btn">Chat on WhatsApp</button>
+        </a>
+    </div>
+
+    <!-- CONTACT FORM -->
+    <div class="contact-form">
+
+        <form action="#" method="POST">
+
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea placeholder="Your Message" rows="5" required></textarea>
+
+            <button type="submit">Send Message</button>
+
+        </form>
+
+    </div>
+
+</section>
+
+</body>
+</html>

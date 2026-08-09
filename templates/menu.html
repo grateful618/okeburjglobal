@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OKEBURJ GLOBAL PRODUCTS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="products-page">
+
+<p class="top-info">
+📍 Lagos, Nigeria <br>
+🚚 Fast Delivery Within Lagos & Nationwide <br>
+📱 Order via WhatsApp Anytime
+</p>
+
+<header class="products-section">
+
+    <!-- SEARCH -->
+    <form method="GET" action="/menu">
+        <input type="text" name="q" placeholder="Search products..." value="{{ query or '' }}">
+        <button type="submit">Search 🔍</button>
+    </form>
+	
+	<div class="category-menu">
+        <a href="/menu">All</a>
+        <a href="/menu?category=Sneakers">👟 Sneakers</a>
+        <a href="/menu?category=Handbags">👜 Handbags</a>
+        <a href="/menu?category=Clothing">👗 Clothing</a>
+        <a href="/menu?category=Wigs">💇 Wigs</a>
+        <a href="/menu?category=Accessories">🕶 Accessories</a>
+    </div>
+	
+	<br>
+
+    <h1 class="products-title">Products Gallery</h1>
+</header>
+
+<nav class="nav">
+    <a href="/">Home</a>
+    <a href="{{ url_for('menu_page') }}">Products</a>
+    
+</nav>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+
+{% if products %}
+    <div class="container">
+
+        {% for p in products %}
+        <div class="card">
+
+            {% if p[3].startswith('http') %}
+                
+				<img src="{{ p[3] }}">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/' + p[3]) }}">
+            {% endif %}
+
+            <h3>{{ p[1] }}</h3>
+            <p>₦{{ p[2] }}</p>
+
+            <!-- ✅ WhatsApp button INSIDE loop -->
+            <a href="https://wa.me/2349159894649?text=I%20want%20to%20order%20{{ p[1] }}%20for%20₦{{ p[2] }}">
+                <button>Order</button>
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+{% else %}
+    <p class="no-result">
+        ❌ No product found for "{{ query }}"
+    </p>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product[1] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="header">
+    <h1>{{ product[1] }}</h1>
+</header>
+
+<nav class="nav">
+    <a href="/">Home</a>
+    <a href="/menu">Back to Products</a>
+</nav>
+
+<div class="product-page">
+
+    <div class="product-card">
+
+        <img src="{{ url_for('static', filename='images/' + product[3]) }}">
+
+        <h2>{{ product[1] }}</h2>
+        <h3>₦{{ product[2] }}</h3>
+
+        {% if product[4] %}
+        <h4>Available sizes:</h4>
+
+        <div class="sizes">
+            {% for size in product[4].split(",") %}
+                <span class="size-box">{{ size }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <a href="https://wa.me/2349159894649?text=Hello%20Okeburjglobal%20I%20want%20{{ product[1] }}" target="_blank">
+            <button class="order-btn">Order on WhatsApp 📱</button>
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

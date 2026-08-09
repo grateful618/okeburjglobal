@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order</title>
+</head>
+<body>
+
+<h1>Place Order</h1>
+
+<form method="POST">
+    <input type="text" name="name" placeholder="Your Name" required><br><br>
+    <input type="text" name="phone" placeholder="Phone Number" required><br><br>
+
+    <select name="item">
+        {% for item in menu %}
+            <option value="{{ item.name }}">{{ item.name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>

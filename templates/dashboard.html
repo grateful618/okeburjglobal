@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <!-- ✅ ADD CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <h1>Admin Dashboard</h1>
+    <p>Okeburjglobal Orders</p>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="/">Home</a>
+    <a href="/menu">Products</a>
+</nav>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <h2>Customer Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="card">
+                <h3>{{ order[0] }}</h3>
+                <p><strong>Phone:</strong> {{ order[1] }}</p>
+                <p><strong>Item:</strong> {{ order[2] }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No orders yet</p>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
