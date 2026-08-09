@@ -17,7 +17,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-app.secret_key = os.environ.get("SECRET_KEY", "okeburj_secret_key_123")
+app.secret_key = os.environ["SECRET_KEY"]
 
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
