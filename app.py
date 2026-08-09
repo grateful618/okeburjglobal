@@ -386,12 +386,14 @@ def dashboard():
 
     return render_template("dashboard.html", orders=orders)
 
-
-
-
 def import_products():
+    print("=== PRODUCT IMPORT STARTING ===")
+
     if not os.path.exists("products_backup.json"):
+        print("ERROR: products_backup.json NOT FOUND")
         return
+
+    print("products_backup.json FOUND")
 
     conn = sqlite3.connect("orders.db")
     c = conn.cursor()
@@ -399,11 +401,15 @@ def import_products():
     c.execute("SELECT COUNT(*) FROM products")
     count = c.fetchone()[0]
 
+    print(f"Current products in database: {count}")
+
     if count == 0:
         import json
 
         with open("products_backup.json", "r", encoding="utf-8") as f:
             products = json.load(f)
+
+        print(f"Backup contains {len(products)} products")
 
         for product in products:
             c.execute("""
@@ -413,9 +419,18 @@ def import_products():
             """, product)
 
         conn.commit()
-        print(f"Imported {len(products)} products.")
+
+        c.execute("SELECT COUNT(*) FROM products")
+        new_count = c.fetchone()[0]
+
+        print(f"SUCCESS: Database now contains {new_count} products")
+
+    else:
+        print(f"IMPORT SKIPPED: Database already contains {count} products")
 
     conn.close()
+
+    print("=== PRODUCT IMPORT FINISHED ===")
 
 
 import_products()
