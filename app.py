@@ -386,5 +386,39 @@ def dashboard():
 
     return render_template("dashboard.html", orders=orders)
 
+
+
+
+def import_products():
+    if not os.path.exists("products_backup.json"):
+        return
+
+    conn = sqlite3.connect("orders.db")
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM products")
+    count = c.fetchone()[0]
+
+    if count == 0:
+        import json
+
+        with open("products_backup.json", "r", encoding="utf-8") as f:
+            products = json.load(f)
+
+        for product in products:
+            c.execute("""
+                INSERT INTO products
+                (id, name, price, image, sizes, category)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, product)
+
+        conn.commit()
+        print(f"Imported {len(products)} products.")
+
+    conn.close()
+
+
+import_products()
+
 if __name__ == "__main__":
     app.run(debug=True)

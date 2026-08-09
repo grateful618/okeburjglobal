@@ -1,0 +1,490 @@
+[
+  [
+    4,
+    "CLASSY CHIC PURSE",
+    35000,
+    "bag16.jpg",
+    null,
+    null
+  ],
+  [
+    5,
+    "CLASSY CHIC PURSE",
+    30000,
+    "bag15.jpg",
+    null,
+    null
+  ],
+  [
+    6,
+    "WOVEN TOTE BAG + SMALL PURSE",
+    27000,
+    "bag12.jpg",
+    null,
+    null
+  ],
+  [
+    7,
+    "WOVEN TOTE BAG + SMALL PURSE",
+    28000,
+    "bag14.jpg",
+    null,
+    null
+  ],
+  [
+    8,
+    "BEAUTIFUL UNIQUE BAG",
+    30000,
+    "bag21.jpg",
+    null,
+    null
+  ],
+  [
+    9,
+    "CHIC FASHION CLUTCH",
+    20000,
+    "bag22.jpg",
+    null,
+    null
+  ],
+  [
+    10,
+    "CHIC FASHION CLUTCH",
+    30000,
+    "bag25.jpg",
+    null,
+    null
+  ],
+  [
+    11,
+    "SWEET POTITO",
+    30000,
+    "bag27.jpg",
+    null,
+    null
+  ],
+  [
+    12,
+    "CHRISTINA & OIK  BAG",
+    32000,
+    "bag29.jpg",
+    null,
+    null
+  ],
+  [
+    13,
+    "PARTY PURSE",
+    28500,
+    "bag9.jpg",
+    null,
+    null
+  ],
+  [
+    14,
+    "PARTY PURSE",
+    28500,
+    "bag8.jpg",
+    null,
+    null
+  ],
+  [
+    16,
+    "NIKE sim",
+    22000,
+    "sneaker4.jpg",
+    "",
+    null
+  ],
+  [
+    17,
+    "NIKE sim",
+    22000,
+    "sneaker5.jpg",
+    "",
+    null
+  ],
+  [
+    21,
+    "NIKE sim",
+    22000,
+    "sneaker9.jpg",
+    "",
+    null
+  ],
+  [
+    22,
+    "NIKE sim",
+    24000,
+    "sneaker10.jpg",
+    "",
+    null
+  ],
+  [
+    24,
+    "FASHION H",
+    27000,
+    "sneaker8.jpg",
+    "",
+    null
+  ],
+  [
+    25,
+    "NIKE sim",
+    32000,
+    "sneaker12.jpg",
+    "",
+    null
+  ],
+  [
+    26,
+    "NIKE sim",
+    32000,
+    "sneaker13.jpg",
+    "",
+    null
+  ],
+  [
+    27,
+    "NEW BALANCE ",
+    32000,
+    "sneaker15.jpg",
+    "",
+    null
+  ],
+  [
+    29,
+    "NEW BALANCE 740 SNK",
+    55000,
+    "sneaker18.jpg",
+    "",
+    null
+  ],
+  [
+    30,
+    "NUMERIC ATELIER SNK ",
+    80000,
+    "sneaker19.jpg",
+    "",
+    null
+  ],
+  [
+    31,
+    "NIKE SHOX TL SNKS",
+    60000,
+    "sneaker20.jpg",
+    "",
+    null
+  ],
+  [
+    32,
+    "NIKE SHOX TL SNKS",
+    60000,
+    "sneaker21.jpg",
+    "",
+    null
+  ],
+  [
+    33,
+    "NIKE SB DUNK LA SNKS",
+    60000,
+    "sneaker22.jpg",
+    "",
+    null
+  ],
+  [
+    34,
+    "DIESEL S-PRO-V-DENSE",
+    60000,
+    "sneaker23.jpg",
+    "",
+    null
+  ],
+  [
+    35,
+    "LOUIS VUITTON LUX SNKS",
+    60000,
+    "sneaker24.jpg",
+    "",
+    null
+  ],
+  [
+    36,
+    "LOUIS VUITTON LUX SNKS",
+    60000,
+    "sneaker22.jpg",
+    "",
+    null
+  ],
+  [
+    37,
+    "NIKE AIR MAX 95 black/laser blue",
+    60000,
+    "sneaker70.jpg",
+    "",
+    null
+  ],
+  [
+    38,
+    "GUCCI X AIR JORDAN ",
+    60000,
+    "sneaker26.jpg",
+    "",
+    null
+  ],
+  [
+    39,
+    "NEW BALANCE 1906",
+    60000,
+    "sneaker27.jpg",
+    "",
+    null
+  ],
+  [
+    40,
+    "ADIDAS SAMBA ROSE",
+    52000,
+    "sneaker28.jpg",
+    "",
+    null
+  ],
+  [
+    41,
+    "NIKE SB DUNK",
+    52000,
+    "sneaker30.jpg",
+    "",
+    null
+  ],
+  [
+    42,
+    "NIKE AIR MAX 97 ",
+    52000,
+    "sneaker31.jpg",
+    "",
+    null
+  ],
+  [
+    43,
+    "NIKE AIR MAX 98",
+    52000,
+    "sneaker71.jpg",
+    "",
+    null
+  ],
+  [
+    44,
+    "NIKE SB DUNK STUSSY",
+    52000,
+    "sneaker32.jpg",
+    "",
+    null
+  ],
+  [
+    46,
+    "AIR JORDAN 1 UNC",
+    50000,
+    "sneaker34.jpg",
+    "",
+    null
+  ],
+  [
+    47,
+    "ADIDAS SUPER STAR",
+    65000,
+    "sneaker35.jpg",
+    "",
+    null
+  ],
+  [
+    48,
+    "NEW BALANCE NM408",
+    52000,
+    "sneaker53.jpg",
+    "",
+    null
+  ],
+  [
+    49,
+    "RICK OWENS DRKSHDW",
+    90000,
+    "sneaker38.jpg",
+    "",
+    null
+  ],
+  [
+    50,
+    "RICK OWEN DRKSHDW",
+    90000,
+    "sneaker39.jpg",
+    "",
+    null
+  ],
+  [
+    52,
+    "NEW BALANCE 1000",
+    55000,
+    "sneaker41.jpg",
+    "",
+    null
+  ],
+  [
+    57,
+    "FASHION",
+    23000,
+    "sneaker46.jpg",
+    "",
+    null
+  ],
+  [
+    58,
+    "HIGH FASHION H",
+    23000,
+    "sneaker47.jpg",
+    "",
+    null
+  ],
+  [
+    59,
+    "gucci bag",
+    60000,
+    "bag2.jpg",
+    "",
+    null
+  ],
+  [
+    62,
+    "AIR JORDAN 4 RETRO SNK",
+    55000,
+    "WhatsApp_Image_2026-08-07_at_10.13.02.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    63,
+    "NIKE AIR FORCE 1 H 3ple white",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.06.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    64,
+    "NIKE SB DUNK  PRO",
+    48000,
+    "WhatsApp_Image_2026-08-07_at_10.13.08.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    65,
+    "FUTURA LABORATORIES X NIKE SB",
+    48000,
+    "WhatsApp_Image_2026-08-07_at_10.13.09.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    66,
+    "NIKE AIR FORCE 1 X GIVENCHY",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.12.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    67,
+    "NIKE VOMERO PLUS ",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.13.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    68,
+    "NIKE AIR PRO-TECH ",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.14.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    69,
+    "NIKE VOMERO PLUS",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.15.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    70,
+    "NIKE AIR MAX ZOOM ",
+    50000,
+    "WhatsApp_Image_2026-08-07_at_10.13.16.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    71,
+    "ASICS GEL-KAYANO 14",
+    55000,
+    "WhatsApp_Image_2026-08-01_at_09.53.06.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    72,
+    "NEW BALANCE 1906",
+    55000,
+    "WhatsApp_Image_2026-08-01_at_09.51.44.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    73,
+    "NEW BALANCE 9060",
+    55000,
+    "WhatsApp_Image_2026-08-01_at_09.51.43.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    74,
+    "DRAKE X NIKE NOCTA GLIDE",
+    55000,
+    "WhatsApp_Image_2026-08-01_at_09.51.22.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    75,
+    "NIKE P-6000 BOWERMAN SERIES",
+    50000,
+    "WhatsApp_Image_2026-08-01_at_09.49.19.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    76,
+    "NIKE FREE METCOM 6",
+    50000,
+    "WhatsApp_Image_2026-08-01_at_09.48.58.jpeg",
+    "",
+    "Sneakers"
+  ],
+  [
+    77,
+    "test sneaker",
+    60000,
+    "https://res.cloudinary.com/mnlac0uf/image/upload/v1786247598/okeburjglobal/products/dezne76l1dy2yheokdgm.jpg",
+    "",
+    "Sneakers"
+  ],
+  [
+    78,
+    "test2",
+    70000,
+    "https://res.cloudinary.com/mnlac0uf/image/upload/v1786248076/okeburjglobal/products/hm1hq7oeis2ycxjd8zyd.jpg",
+    "",
+    "Sneakers"
+  ]
+]
