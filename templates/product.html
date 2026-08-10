@@ -39,7 +39,7 @@
           'I want to order: ' ~ product[1] ~ '\n'
           'Price: ₦' ~ product[2] ~ '\n'
           'Product image: ' ~
-          'https://okeburjglobal-1.onrender.com/static/images/' ~ product[3]
+          url_for('static', filename='images/' ~ product[3], _external=True)
           ) | urlencode
           }}" target="_blank">
         <button class="order-btn">Order on WhatsApp 📱</button>
