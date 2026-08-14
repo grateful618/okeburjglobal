@@ -34,16 +34,17 @@
         </div>
         {% endif %}
 
-        <a href="https://wa.me/2349159894649?text={{
-            ('Hello Okeburjglobal!\n\n'
-             'I want to order: ' ~ product[1] ~ '\n'
-             'Price: ₦' ~ product[2] ~ '\n'
-             'Product image: ' ~
-             request.url_root ~ 'static/images/' ~ product[3]
-            ) | urlencode
-        }}" target="_blank">
-            <button class="order-btn">Order on WhatsApp 📱</button>
-        </a>
+        {% set image_url = url_for('static', filename='images/' ~ product[3], _external=True) %}
+
+    <a href="https://wa.me/2349159894649?text={{
+       ('Hello Okeburjglobal!\n\n'
+        'I want to order: ' ~ product[1] ~ '\n'
+        'Price: ₦' ~ product[2] ~ '\n'
+        'Product image: ' ~ image_url
+       ) | urlencode
+    }}" target="_blank">
+    <button class="order-btn">Order on WhatsApp 📱</button>
+    </a>
 
     </div>
  
