@@ -49,20 +49,26 @@
         {% for p in products %}
         <div class="card">
 
-            {% if p[3].startswith('http') %}
-                
-				<img src="{{ p[3] }}">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/' + p[3]) }}">
-            {% endif %}
+    {% if p[3].startswith('http') %}
+        {% set image_url = p[3] %}
+        <img src="{{ p[3] }}">
+    {% else %}
+        {% set image_url = url_for('static', filename='images/' ~ p[3], _external=True) %}
+        <img src="{{ url_for('static', filename='images/' + p[3]) }}">
+    {% endif %}
 
-            <h3>{{ p[1] }}</h3>
-            <p>₦{{ p[2] }}</p>
+    <h3>{{ p[1] }}</h3>
+    <p>₦{{ p[2] }}</p>
 
-            <!-- ✅ WhatsApp button INSIDE loop -->
-            <a href="https://wa.me/2349159894649?text=I%20want%20to%20order%20{{ p[1] }}%20for%20₦{{ p[2] }}">
-                <button>Order</button>
-            </a>
+    <a href="https://wa.me/2349159894649?text={{
+        ('Hello Okeburjglobal!\n\n'
+         'I want to order: ' ~ p[1] ~ '\n'
+         'Price: ₦' ~ p[2] ~ '\n'
+         'Product image: ' ~ image_url
+        ) | urlencode
+    }}" target="_blank">
+        <button>Order on WhatsApp 📱</button>
+    </a>
 
         </div>
         {% endfor %}
