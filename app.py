@@ -6,7 +6,7 @@ import cloudinary.uploader
 
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, request, redirect, session,url_for
+from flask import Flask, render_template, request, redirect, session,Response,url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -326,7 +326,59 @@ def product_detail(product_id):
         return "Product not found", 404
 
     return render_template("product.html", product=product)
+@app.route("/sitemap.xml")
+def sitemap():
+    conn = sqlite3.connect("orders.db")
+    c = conn.cursor()
+
+    c.execute("SELECT id FROM products")
+    product_ids = c.fetchall()
+
+    conn.close()
+
+    base_url = "https://okeburjglobal-1.onrender.com"
+
+    urls = [
+        f"{base_url}/",
+        f"{base_url}/menu",
+        f"{base_url}/about",
+        f"{base_url}/contact"
+    ]
+
+    for product in product_ids:
+        urls.append(f"{base_url}/product/{product[0]}")
+
+    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+
+    for url in urls:
+        sitemap_xml += f"<url><loc>{url}</loc></url>"
+
+    sitemap_xml += "</urlset>"
+
+    return Response(sitemap_xml, mimetype="application/xml")
     
+    
+@app.route("/robots.txt")
+def robots():
+    robots_txt = """User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /login
+Disallow: /logout
+Disallow: /dashboard
+Disallow: /change_password
+Disallow: /add_product
+Disallow: /edit_product/
+Disallow: /delete_product/
+Disallow: /order
+
+Sitemap: https://okeburjglobal-1.onrender.com/sitemap.xml
+"""
+    return Response(robots_txt, mimetype="text/plain")    
+
+
 
 @app.route("/")
 def home():
