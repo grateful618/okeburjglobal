@@ -491,18 +491,21 @@ import_products()
 def reset_admin():
     conn = sqlite3.connect("orders.db")
     c = conn.cursor()
-
     new_hash = generate_password_hash("10423")
-
-    c.execute(
-        "UPDATE admins SET password = ? WHERE username = ?",
-        (new_hash, "admin")
-    )
-
+    
+    c.execute("SELECT id FROM admins WHERE username = 'admin'")
+    row = c.fetchone()
+    
+    if row:
+        c.execute("UPDATE admins SET password = ? WHERE username = 'admin'", (new_hash,))
+        message = "Admin password updated for existing user."
+    else:
+        c.execute("INSERT INTO admins (username, password) VALUES ('admin', ?)", (new_hash,))
+        message = "Admin user created."
+        
     conn.commit()
     conn.close()
-
-    return "Admin password reset to 10423"
+    return f"Success! {message} Password set to: 10423"
 
 if __name__ == "__main__":
     app.run(debug=True)
