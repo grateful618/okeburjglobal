@@ -487,5 +487,22 @@ def import_products():
 
 import_products()
 
+@app.route("/reset_admin")
+def reset_admin():
+    conn = sqlite3.connect("orders.db")
+    c = conn.cursor()
+
+    new_hash = generate_password_hash("10423")
+
+    c.execute(
+        "UPDATE admins SET password = ? WHERE username = ?",
+        (new_hash, "admin")
+    )
+
+    conn.commit()
+    conn.close()
+
+    return "Admin password reset to 10423"
+
 if __name__ == "__main__":
     app.run(debug=True)
