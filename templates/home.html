@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OKEBURJ GLOBALFASHION</title>
-	
+    <title>Okeburjglobal | Quality Sneakers, Shoes, Bags & Fashion Store in Nigeria</title>
+	 
 	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 
+	 <meta name="description" content="Shop quality sneakers, shoes, handbags, wigs and fashion products from Okeburjglobal. Fast delivery across Lagos and Nigeria. Order online today.">
 	 
 	 <meta name="google-site-verification" content="vxhHWBrmrkOUkfmDmuI6w8W6k1WkFmz9bbFzJMnR76M" />
 
@@ -19,7 +21,10 @@
 
 <!-- HEADER -->
 <header class="site-header">
-	<h1 class="site-title">OKEBURJ GLOBAL FASHION PLACE</h1>
+	<h1 class="site-title">Okeburjglobal Fashion Store</h1>
+	<p class="site-subtitle">
+      Premium Sneakers, Shoes, Bags & Wigs in Nigeria
+    </p>
     <p class="site-subtitle">Your Trusted Fashion Store</p>
 </header>
 
@@ -40,7 +45,7 @@
     <a href="{{ url_for('menu_page') }}" class="hero-link">      
 
     <img src="{{ url_for('static', filename='images/hero-banner.png') }}"
-         alt="Okeburjglobal Hero Banner"
+         alt="Okeburjglobal fashion store sneakers shoes bags Nigeria"
          class="hero-banner-img">
 	 
 	 
@@ -58,7 +63,8 @@
         <div class="slide">
 
             <a href="{{ url_for('product_detail', product_id=p[0]) }}">
-                <img src="{{ p[3]|image_url }}">
+                <img src="{{ p[3]|image_url }}" 
+                alt="{{ p[1] }} - Okeburjglobal fashion product">
             </a>
 
         </div>
@@ -87,7 +93,9 @@
         <div class="card">
 
             <a href="{{ url_for('product_detail', product_id=p[0]) }}">
-                <img src="{{ p[3]|image_url }}" width="120">
+                <img src="{{ p[3]|image_url }}" 
+                     alt="{{ p[1] }} - Okeburjglobal product"
+                     width="120">
                 <h3>{{ p[1] }}</h3>
                 <p>₦{{ p[2] }}</p>
             </a>
@@ -118,7 +126,7 @@
         <div class="contact-info">
             <p>📍 Lagos, Nigeria</p>
             <p>📞 +234 915 989 4649</p>
-            <p>📧 support@okeburj@gmail.com</p>
+            <p>📧 support@okeburj.com</p>
         </div>
 
         <div class="contact-action">
@@ -131,7 +139,7 @@
 
 </section>
 
-</body>
+
 
 <!-- OPTIONAL: MORE CONTENT BELOW -->
 
