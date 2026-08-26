@@ -7,7 +7,15 @@
 <body>
 
 <header class="header">
-    <h1>{{ product[1] }}</h1>
+    <head>
+    <title>{{ product[1] }} | Okeburjglobal Fashion Store Nigeria</title>
+
+    <meta name="description" content="Buy {{ product[1] }} from Okeburjglobal. Quality fashion products available in Nigeria. Price ₦{{ product[2] }}. Order easily on WhatsApp.">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 </header>
 
 <nav class="nav">
@@ -19,9 +27,10 @@
 
     <div class="product-card">
 
-        <img src="{{ url_for('static', filename='images/' + product[3]) }}">
+        <img src="{{ product[3]|image_url }}"
+             alt="{{ product[1] }} - Okeburjglobal fashion product Nigeria">
 
-        <h2>{{ product[1] }}</h2>
+        <h2>{{ product[1] }} - Available in Nigeria</h2>
         <h3>₦{{ product[2] }}</h3>
 
         {% if product[4] %}
