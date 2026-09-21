@@ -443,24 +443,21 @@ def import_products():
     conn = sqlite3.connect("orders.db")
     c = conn.cursor()
 
-    c.execute("SELECT COUNT(*) FROM products")
-    count = c.fetchone()[0]
+    with open("products_backup.json", "r", encoding="utf-8") as f:
+        products = json.load(f)
 
-    if count == 0:
-        with open("products_backup.json", "r", encoding="utf-8") as f:
-            products = json.load(f)
-
-        for product in products:
+    for p in products:
+        # p structure: [id, name, price, image, sizes, category]
+        p_id = p[0]
+        c.execute("SELECT COUNT(*) FROM products WHERE id = ?", (p_id,))
+        if c.fetchone()[0] == 0:
             c.execute("""
-                INSERT INTO products
-                (id, name, price, image, sizes, category)
+                INSERT INTO products (id, name, price, image, sizes, category)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, product)
+            """, (p[0], p[1], p[2], p[3], p[4] if len(p) > 4 else '', p[5] if len(p) > 5 else ''))
 
-        conn.commit()
-
+    conn.commit()
     conn.close()
-
 
 import_products()
 
