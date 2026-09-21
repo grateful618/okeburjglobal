@@ -95,7 +95,7 @@
     {% for p in products %}
     <div class="product-card">
 
-        <img src="{{ url_for('static', filename='images/' + p[3]) }}">
+        <img src="{{ p[3] if p[3].startswith('http') else url_for('static', filename='images/' + p[3]) }}" alt="Product Image">
 
         <div>
             <h3>{{ p[1] }}</h3>
