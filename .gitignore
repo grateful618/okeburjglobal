@@ -3,3 +3,5 @@ venv/
 __pycache__/
 *.pyc
 orders.db
+.tmp.driveupload/
+.tmp.driveupload/
