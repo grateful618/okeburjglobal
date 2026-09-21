@@ -447,7 +447,7 @@ def sync_now():
     
     
     
-    def import_products():
+def import_products():
     if not os.path.exists("products_backup.json"):
         return
 
