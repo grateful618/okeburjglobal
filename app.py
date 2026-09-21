@@ -434,9 +434,20 @@ def dashboard():
     conn.close()
 
     return render_template("dashboard.html", orders=orders)
-
-
-def import_products():
+    
+@app.route("/sync_now")
+def sync_now():
+    import_products()
+    conn = sqlite3.connect("orders.db")
+    c = conn.cursor()
+    c.execute("SELECT id, name, image FROM products ORDER BY id DESC LIMIT 10")
+    rows = c.fetchall()
+    conn.close()
+    return {"message": "Database sync executed!", "latest_10_products": rows}    
+    
+    
+    
+    def import_products():
     if not os.path.exists("products_backup.json"):
         return
 
