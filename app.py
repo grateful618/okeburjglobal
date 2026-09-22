@@ -75,14 +75,19 @@ class PostgresCursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, vars=None):
-        if isinstance(query, str):
-            query = query.replace('?', '%s')
-
-        if vars is not None:
+        if vars is not None and vars != () and vars != []:
+            # When parameters are supplied, ensure '?' is converted to '%s'
+            if isinstance(query, str):
+                query = query.replace('?', '%s')
             if not isinstance(vars, (tuple, list, dict)):
                 vars = (vars,)
             return self.cursor.execute(query, vars)
         else:
+            # When NO parameters are supplied, strip or clean unhandled placeholders
+            # so PostgreSQL does not see raw '%s' without values
+            if isinstance(query, str) and '%s' in query:
+                # If query contains %s without vars, replace with '?' or handle safely
+                query = query.replace('%s', '?')
             return self.cursor.execute(query)
 
     def fetchone(self):
@@ -326,7 +331,7 @@ def admin():
 
     conn = get_db_connection()
     c = conn.cursor()
-    cursor.execute("SELECT id FROM admins WHERE username = ?", (username,))
+    c.execute("SELECT id FROM admins WHERE username = ?", ('admin',))
     products = c.fetchall()
     conn.close()
 
