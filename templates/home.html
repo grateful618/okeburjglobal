@@ -62,7 +62,7 @@
         {% for p in all_products %}
         <div class="slide">
 
-            <a href="{{ url_for('product_detail', product_id=p[0]) }}">
+            <a href="{{ url_for('product_detail', product_id=p['id']) }}">
                 <img src="{{ p[3]|image_url }}" 
                 alt="{{ p[1] }} - Okeburjglobal fashion product">
             </a>
@@ -92,7 +92,7 @@
         {% for p in products %}
         <div class="card">
 
-            <a href="{{ url_for('product_detail', product_id=p[0]) }}">
+            <a href="{{ url_for('product_detail', product_id=p['id']) }}">
                 <img src="{{ p[3]|image_url }}" 
                      alt="{{ p[1] }} - Okeburjglobal product"
                      width="120">
