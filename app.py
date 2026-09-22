@@ -75,7 +75,6 @@ class PostgresCursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, vars=None):
-        # ALWAYS convert SQLite '?' to Postgres '%s' FIRST
         if isinstance(query, str):
             query = query.replace('?', '%s')
 
@@ -91,7 +90,6 @@ class PostgresCursorWrapper:
 
     def fetchall(self):
         return self.cursor.fetchall()
-
 
 class PostgresConnectionWrapper:
     def __init__(self, conn):
