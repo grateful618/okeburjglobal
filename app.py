@@ -72,13 +72,15 @@ class PostgresCursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, vars=None):
+        # Convert SQLite ? placeholders to PostgreSQL %s
+        query = query.replace('?', '%s')
+        
         if vars is not None:
-            # Replace SQLite '?' placeholders with Postgres '%s'
-            query = query.replace('?', '%s')
+            # Ensure tuple/list structure for psycopg2 parameter binding
+            if not isinstance(vars, (tuple, list)):
+                vars = (vars,)
             return self.cursor.execute(query, vars)
         else:
-            # If no variables passed, escape literal '%' as '%%' so psycopg2 does not throw syntax errors
-            query = query.replace('%', '%%')
             return self.cursor.execute(query)
 
     def fetchone(self):
