@@ -67,7 +67,6 @@ class PostgresConnectionWrapper:
     def close(self):
         self.conn.close()
 
-
 import psycopg2
 import psycopg2.extras
 
@@ -76,17 +75,15 @@ class PostgresCursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, vars=None):
-        # 1. If parameters are provided, safely convert '?' to '%s'
-        if vars is not None and vars != () and vars != []:
+        # ALWAYS convert SQLite '?' to Postgres '%s' FIRST
+        if isinstance(query, str):
             query = query.replace('?', '%s')
+
+        if vars is not None:
             if not isinstance(vars, (tuple, list, dict)):
                 vars = (vars,)
             return self.cursor.execute(query, vars)
-        
-        # 2. If NO parameters were passed, strip out stray '%s' placeholders 
-        # or escape literal '%' signs so psycopg2 does not throw a syntax error
         else:
-            query = query.replace('%s', '?').replace('%', '%%')
             return self.cursor.execute(query)
 
     def fetchone(self):
@@ -108,6 +105,8 @@ class PostgresConnectionWrapper:
 
     def close(self):
         self.conn.close()
+
+
 def get_db_connection():
     if DATABASE_URL and psycopg2:
         db_url = DATABASE_URL
