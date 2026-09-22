@@ -1,10 +1,9 @@
-import sqlite3
 import os
 import json
+import sqlite3
 
 import cloudinary
 import cloudinary.uploader
-
 from dotenv import load_dotenv
 
 from flask import Flask, render_template, request, redirect, session, Response, url_for
@@ -32,8 +31,14 @@ cloudinary.config(
 )
 
 
-def init_db():
+def get_db_connection():
     conn = sqlite3.connect("orders.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+    conn = get_db_connection()
     c = conn.cursor()
 
     # ADMINS TABLE
@@ -45,18 +50,12 @@ def init_db():
         )
     ''')
 
-    # Ensure admin account exists with password '10423'
+    # Seed default admin ONLY if missing (prevents overwriting changed passwords on restart)
     c.execute("SELECT id FROM admins WHERE username = 'admin'")
     if not c.fetchone():
         c.execute(
             "INSERT INTO admins (username, password) VALUES (?, ?)",
             ("admin", generate_password_hash("10423"))
-        )
-        print("Default admin account created with password '10423'.")
-    else:
-        c.execute(
-            "UPDATE admins SET password = ? WHERE username = 'admin'",
-            (generate_password_hash("10423"),)
         )
 
     # ORDERS TABLE
@@ -93,7 +92,48 @@ def init_db():
     conn.close()
 
 
+def import_products():
+    if not os.path.exists("products_backup.json"):
+        return
+
+    conn = get_db_connection()
+    c = conn.cursor()
+
+    with open("products_backup.json", "r", encoding="utf-8") as f:
+        products = json.load(f)
+
+    for p in products:
+        p_id = p[0]
+        c.execute("SELECT COUNT(*) FROM products WHERE id = ?", (p_id,))
+        if c.fetchone()[0] == 0:
+            c.execute("""
+                INSERT INTO products (id, name, price, image, sizes, category)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (p[0], p[1], p[2], p[3], p[4] if len(p) > 4 else '', p[5] if len(p) > 5 else ''))
+
+    conn.commit()
+    conn.close()
+
+
+# Initialize database once during startup
 init_db()
+import_products()
+
+
+@app.route("/")
+def home():
+    conn = get_db_connection()
+    c = conn.cursor()
+
+    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC")
+    all_products = c.fetchall()
+
+    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC LIMIT 12")
+    featured = c.fetchall()
+
+    conn.close()
+
+    return render_template("home.html", products=featured, all_products=all_products)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -102,17 +142,14 @@ def login():
         username = request.form["username"].strip()
         password = request.form["password"].strip()
 
-        conn = sqlite3.connect("orders.db")
+        conn = get_db_connection()
         c = conn.cursor()
 
-        c.execute(
-            "SELECT password FROM admins WHERE username = ?",
-            (username,)
-        )
+        c.execute("SELECT password FROM admins WHERE username = ?", (username,))
         admin = c.fetchone()
         conn.close()
 
-        if admin and check_password_hash(admin[0], password):
+        if admin and check_password_hash(admin["password"], password):
             session["admin"] = True
             return redirect("/admin")
         else:
@@ -121,24 +158,24 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/logout")
+def logout():
+    session.pop("admin", None)
+    return redirect("/login")
+
+
 @app.route("/menu")
 def menu_page():
     query = request.args.get("q")
     category = request.args.get("category")
 
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
 
     if query:
-        c.execute(
-            "SELECT * FROM products WHERE name LIKE ?",
-            ('%' + query + '%',)
-        )
+        c.execute("SELECT * FROM products WHERE name LIKE ?", ('%' + query + '%',))
     elif category:
-        c.execute(
-            "SELECT * FROM products WHERE category = ?",
-            (category,)
-        )
+        c.execute("SELECT * FROM products WHERE category = ?", (category,))
     else:
         c.execute("SELECT * FROM products")
 
@@ -158,12 +195,6 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route("/logout")
-def logout():
-    session.pop("admin", None)
-    return redirect("/login")
-
-
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
     if not session.get("admin"):
@@ -180,16 +211,13 @@ def change_password():
                 error="New passwords do not match."
             )
 
-        conn = sqlite3.connect("orders.db")
+        conn = get_db_connection()
         c = conn.cursor()
 
-        c.execute(
-            "SELECT password FROM admins WHERE username = ?",
-            ("admin",)
-        )
+        c.execute("SELECT password FROM admins WHERE username = ?", ("admin",))
         admin = c.fetchone()
 
-        if not admin or not check_password_hash(admin[0], current_password):
+        if not admin or not check_password_hash(admin["password"], current_password):
             conn.close()
             return render_template(
                 "change_password.html",
@@ -197,10 +225,7 @@ def change_password():
             )
 
         new_hash = generate_password_hash(new_password)
-        c.execute(
-            "UPDATE admins SET password = ? WHERE username = ?",
-            (new_hash, "admin")
-        )
+        c.execute("UPDATE admins SET password = ? WHERE username = ?", (new_hash, "admin"))
 
         conn.commit()
         conn.close()
@@ -218,7 +243,7 @@ def admin():
     if not session.get("admin"):
         return redirect("/login")
 
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute("SELECT id, name, price, image FROM products")
     products = c.fetchall()
@@ -232,7 +257,7 @@ def delete_product(product_id):
     if not session.get("admin"):
         return redirect("/login")
 
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute("DELETE FROM products WHERE id = ?", (product_id,))
     conn.commit()
@@ -246,7 +271,7 @@ def edit_product(product_id):
     if not session.get("admin"):
         return redirect("/login")
 
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
 
     if request.method == "POST":
@@ -281,8 +306,11 @@ def add_product():
         name = request.form["name"]
         price = request.form["price"]
         category = request.form["category"]
-        image = request.files["image"]
+        image = request.files.get("image")
         sizes = request.form.get("sizes", "")
+
+        if not image or image.filename == "":
+            return render_template("add_product.html", error="Please upload a valid image.")
 
         upload_result = cloudinary.uploader.upload(
             image,
@@ -291,7 +319,7 @@ def add_product():
 
         image_url = upload_result["secure_url"]
 
-        conn = sqlite3.connect("orders.db")
+        conn = get_db_connection()
         c = conn.cursor()
 
         c.execute("""
@@ -309,7 +337,7 @@ def add_product():
 
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
 
     c.execute("SELECT id, name, price, image, sizes FROM products WHERE id = ?", (product_id,))
@@ -322,77 +350,9 @@ def product_detail(product_id):
     return render_template("product.html", product=product)
 
 
-@app.route("/sitemap.xml")
-def sitemap():
-    conn = sqlite3.connect("orders.db")
-    c = conn.cursor()
-
-    c.execute("SELECT id FROM products")
-    product_ids = c.fetchall()
-    conn.close()
-
-    base_url = "https://okeburjglobal-1.onrender.com"
-
-    urls = [
-        f"{base_url}/",
-        f"{base_url}/menu",
-        f"{base_url}/about",
-        f"{base_url}/contact"
-    ]
-
-    for product in product_ids:
-        urls.append(f"{base_url}/product/{product[0]}")
-
-    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>'
-    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-
-    for url in urls:
-        sitemap_xml += f"<url><loc>{url}</loc></url>"
-
-    sitemap_xml += "</urlset>"
-
-    return Response(sitemap_xml, mimetype="application/xml")
-
-
-@app.route("/robots.txt")
-def robots():
-    robots_txt = """User-agent: *
-Allow: /
-
-Disallow: /admin
-Disallow: /login
-Disallow: /logout
-Disallow: /dashboard
-Disallow: /change_password
-Disallow: /add_product
-Disallow: /edit_product/
-Disallow: /delete_product/
-Disallow: /order
-
-Sitemap: https://okeburjglobal-1.onrender.com/sitemap.xml
-"""
-    return Response(robots_txt, mimetype="text/plain")
-
-
-@app.route("/")
-def home():
-    conn = sqlite3.connect("orders.db")
-    c = conn.cursor()
-
-    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC")
-    all_products = c.fetchall()
-
-    c.execute("SELECT id, name, price, image FROM products ORDER BY id DESC LIMIT 12")
-    featured = c.fetchall()
-
-    conn.close()
-
-    return render_template("home.html", products=featured, all_products=all_products)
-
-
 @app.route("/order", methods=["GET", "POST"])
 def order():
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
 
     if request.method == "POST":
@@ -427,74 +387,81 @@ def dashboard():
     if not session.get("admin"):
         return redirect("/login")
 
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute("SELECT name, phone, item FROM orders")
     orders = c.fetchall()
     conn.close()
 
     return render_template("dashboard.html", orders=orders)
-    
+
+
 @app.route("/sync_now")
 def sync_now():
+    if not session.get("admin"):
+        return redirect("/login")
+
     import_products()
-    conn = sqlite3.connect("orders.db")
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute("SELECT id, name, image FROM products ORDER BY id DESC LIMIT 10")
-    rows = c.fetchall()
+    rows = [dict(row) for row in c.fetchall()]
     conn.close()
-    return {"message": "Database sync executed!", "latest_10_products": rows}    
-    
-    
-    
-def import_products():
-    if not os.path.exists("products_backup.json"):
-        return
+    return {"message": "Database sync executed!", "latest_10_products": rows}
 
-    conn = sqlite3.connect("orders.db")
+
+@app.route("/sitemap.xml")
+def sitemap():
+    conn = get_db_connection()
     c = conn.cursor()
 
-    with open("products_backup.json", "r", encoding="utf-8") as f:
-        products = json.load(f)
-
-    for p in products:
-        # p structure: [id, name, price, image, sizes, category]
-        p_id = p[0]
-        c.execute("SELECT COUNT(*) FROM products WHERE id = ?", (p_id,))
-        if c.fetchone()[0] == 0:
-            c.execute("""
-                INSERT INTO products (id, name, price, image, sizes, category)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (p[0], p[1], p[2], p[3], p[4] if len(p) > 4 else '', p[5] if len(p) > 5 else ''))
-
-    conn.commit()
+    c.execute("SELECT id FROM products")
+    product_ids = c.fetchall()
     conn.close()
 
-import_products()
+    base_url = "https://okeburjglobal-1.onrender.com"
+
+    urls = [
+        f"{base_url}/",
+        f"{base_url}/menu",
+        f"{base_url}/about",
+        f"{base_url}/contact"
+    ]
+
+    for product in product_ids:
+        urls.append(f"{base_url}/product/{product['id']}")
+
+    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+
+    for url in urls:
+        sitemap_xml += f"<url><loc>{url}</loc></url>"
+
+    sitemap_xml += "</urlset>"
+
+    return Response(sitemap_xml, mimetype="application/xml")
 
 
-@app.route("/reset_admin")
-def reset_admin():
-    conn = sqlite3.connect("orders.db")
-    c = conn.cursor()
-    new_hash = generate_password_hash("10423")
+@app.route("/robots.txt")
+def robots():
+    robots_txt = """User-agent: *
+Allow: /
 
-    c.execute("SELECT id FROM admins WHERE username = 'admin'")
-    row = c.fetchone()
+Disallow: /admin
+Disallow: /login
+Disallow: /logout
+Disallow: /dashboard
+Disallow: /change_password
+Disallow: /add_product
+Disallow: /edit_product/
+Disallow: /delete_product/
+Disallow: /order
 
-    if row:
-        c.execute("UPDATE admins SET password = ? WHERE username = 'admin'", (new_hash,))
-        message = "Admin password updated for existing user."
-    else:
-        c.execute("INSERT INTO admins (username, password) VALUES ('admin', ?)", (new_hash,))
-        message = "Admin user created."
-
-    conn.commit()
-    conn.close()
-    return f"Success! {message} Password set to: 10423"
+Sitemap: https://okeburjglobal-1.onrender.com/sitemap.xml
+"""
+    return Response(robots_txt, mimetype="text/plain")
 
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
