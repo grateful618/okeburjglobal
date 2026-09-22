@@ -42,52 +42,21 @@ cloudinary.config(
 # Grab DATABASE_URL from Render environment
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-class DictRowWrapper:
-    """Wrapper so PostgreSQL database rows act like dictionary objects (same as sqlite3.Row)"""
-    def __init__(self, d):
-        self._d = d
-    def __getitem__(self, key):
-        return self._d[key]
-    def get(self, key, default=None):
-        return self._d.get(key, default)
-    def keys(self):
-        return self._d.keys()
-
-class PostgresConnectionWrapper:
-    """Connection wrapper to map PostgreSQL queries and ? placeholders to psycopg2 format"""
-    def __init__(self, conn):
-        self.conn = conn
-
-    def cursor(self):
-        return PostgresCursorWrapper(self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor))
-
-    def commit(self):
-        self.conn.commit()
-
-    def close(self):
-        self.conn.close()
-
-import psycopg2
-import psycopg2.extras
 
 class PostgresCursorWrapper:
     def __init__(self, cursor):
         self.cursor = cursor
 
     def execute(self, query, vars=None):
-        if vars is not None and vars != () and vars != []:
-            # When parameters are supplied, ensure '?' is converted to '%s'
-            if isinstance(query, str):
-                query = query.replace('?', '%s')
+        if isinstance(query, str):
+            # Unconditionally translate SQLite '?' placeholders to PostgreSQL '%s'
+            query = query.replace('?', '%s')
+
+        if vars is not None:
             if not isinstance(vars, (tuple, list, dict)):
                 vars = (vars,)
             return self.cursor.execute(query, vars)
         else:
-            # When NO parameters are supplied, strip or clean unhandled placeholders
-            # so PostgreSQL does not see raw '%s' without values
-            if isinstance(query, str) and '%s' in query:
-                # If query contains %s without vars, replace with '?' or handle safely
-                query = query.replace('%s', '?')
             return self.cursor.execute(query)
 
     def fetchone(self):
@@ -95,6 +64,7 @@ class PostgresCursorWrapper:
 
     def fetchall(self):
         return self.cursor.fetchall()
+
 
 class PostgresConnectionWrapper:
     def __init__(self, conn):
@@ -122,21 +92,33 @@ def get_db_connection():
         conn.row_factory = sqlite3.Row
         return conn
 
+
 def init_db():
     conn = get_db_connection()
     c = conn.cursor()
 
-    # ADMINS TABLE
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS admins (
-            id SERIAL PRIMARY KEY,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )
-    ''')
+    is_postgres = bool(DATABASE_URL and psycopg2)
 
-    # # Seed default admin ONLY if missings
-    c.execute("SELECT id FROM admins WHERE username = %s" if (DATABASE_URL and psycopg2) else "SELECT id FROM admins WHERE username = 'admin'")
+    # ADMINS TABLE
+    if is_postgres:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS admins (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+    else:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS admins (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+
+    # Seed default admin if missing
+    c.execute("SELECT id FROM admins WHERE username = ?", ("admin",))
     if not c.fetchone():
         c.execute(
             "INSERT INTO admins (username, password) VALUES (?, ?)",
@@ -144,35 +126,48 @@ def init_db():
         )
 
     # ORDERS TABLE
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            phone TEXT,
-            item TEXT
-        )
-    ''')
+    if is_postgres:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                name TEXT,
+                phone TEXT,
+                item TEXT
+            )
+        ''')
+    else:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                phone TEXT,
+                item TEXT
+            )
+        ''')
 
     # PRODUCTS TABLE
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            price INTEGER,
-            image TEXT
-        )
-    ''')
-    
-    # Add columns if missing 
-    try:
-        c.execute("ALTER TABLE products ADD COLUMN sizes TEXT")
-    except Exception:
-        pass
-
-    try:
-        c.execute("ALTER TABLE products ADD COLUMN category TEXT")
-    except Exception:
-        pass
+    if is_postgres:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id SERIAL PRIMARY KEY,
+                name TEXT,
+                price INTEGER,
+                image TEXT,
+                sizes TEXT,
+                category TEXT
+            )
+        ''')
+    else:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                price INTEGER,
+                image TEXT,
+                sizes TEXT,
+                category TEXT
+            )
+        ''')
 
     conn.commit()
     conn.close()
@@ -190,8 +185,11 @@ def import_products():
 
     for p in products:
         p_id = p[0]
-        c.execute("SELECT COUNT(*) FROM products WHERE id = ?", (p_id,))
-        if c.fetchone()[0] == 0:
+        c.execute("SELECT COUNT(*) as count FROM products WHERE id = ?", (p_id,))
+        row = c.fetchone()
+        count = row['count'] if isinstance(row, dict) else row[0]
+        
+        if count == 0:
             c.execute("""
                 INSERT INTO products (id, name, price, image, sizes, category)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -331,7 +329,7 @@ def admin():
 
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT id FROM admins WHERE username = ?", ('admin',))
+    c.execute("SELECT id, name, price, image, sizes, category FROM products ORDER BY id DESC")
     products = c.fetchall()
     conn.close()
 
