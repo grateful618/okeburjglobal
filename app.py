@@ -68,35 +68,35 @@ class PostgresConnectionWrapper:
         self.conn.close()
 
 class PostgresCursorWrapper:
-    def __init__(self, cur):
-        self.cur = cur
+    def __init__(self, cursor):
+        self.cursor = cursor
 
     def execute(self, query, vars=None):
-        # Convert sqlite ? placeholders to psycopg2 %s placeholders
-        query_pg = query.replace("?", "%s")
-        # Adjust SQLite AUTOINCREMENT syntax to PostgreSQL SERIAL syntax
-        query_pg = query_pg.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+        # Convert SQLite ? placeholders to PostgreSQL %s placeholders
+        query = query.replace('?', '%s')
+        
         if vars is not None:
-            self.cur.execute(query_pg, vars)
-        else:
-            self.cur.execute(query_pg)
+            return self.cursor.execute(query, vars)
+        return self.cursor.execute(query)
 
     def fetchone(self):
-        row = self.cur.fetchone()
-        return DictRowWrapper(dict(row)) if row else None
+        return self.cursor.fetchone()
 
     def fetchall(self):
-        rows = self.cur.fetchall()
-        return [DictRowWrapper(dict(r)) for r in rows]
+        return self.cursor.fetchall()
 
-    @property
-    def lastrowid(self):
-        try:
-            self.cur.execute("SELECT LASTVAL()")
-            return self.cur.fetchone()[0]
-        except Exception:
-            return None
+class PostgresConnectionWrapper:
+    def __init__(self, conn):
+        self.conn = conn
 
+    def cursor(self):
+        return PostgresCursorWrapper(self.conn.cursor())
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
 
 def get_db_connection():
     if DATABASE_URL and psycopg2:
