@@ -1,93 +1,5 @@
 [
   [
-    4,
-    "CLASSY CHIC PURSE",
-    35000,
-    "bag16.jpg",
-    null,
-    null
-  ],
-  [
-    5,
-    "CLASSY CHIC PURSE",
-    30000,
-    "bag15.jpg",
-    null,
-    null
-  ],
-  [
-    6,
-    "WOVEN TOTE BAG + SMALL PURSE",
-    27000,
-    "bag12.jpg",
-    null,
-    null
-  ],
-  [
-    7,
-    "WOVEN TOTE BAG + SMALL PURSE",
-    28000,
-    "bag14.jpg",
-    null,
-    null
-  ],
-  [
-    8,
-    "BEAUTIFUL UNIQUE BAG",
-    30000,
-    "bag21.jpg",
-    null,
-    null
-  ],
-  [
-    9,
-    "CHIC FASHION CLUTCH",
-    20000,
-    "bag22.jpg",
-    null,
-    null
-  ],
-  [
-    10,
-    "CHIC FASHION CLUTCH",
-    30000,
-    "bag25.jpg",
-    null,
-    null
-  ],
-  [
-    11,
-    "SWEET POTITO",
-    30000,
-    "bag27.jpg",
-    null,
-    null
-  ],
-  [
-    12,
-    "CHRISTINA & OIK  BAG",
-    32000,
-    "bag29.jpg",
-    null,
-    null
-  ],
-  [
-    13,
-    "PARTY PURSE",
-    28500,
-    "bag9.jpg",
-    null,
-    null
-  ],
-  [
-    14,
-    "PARTY PURSE",
-    28500,
-    "bag8.jpg",
-    null,
-    null
-  ],
-  [
     16,
     "NIKE sim",
     22000,
@@ -470,21 +382,6 @@
     "WhatsApp_Image_2026-08-01_at_09.48.58.jpeg",
     "",
     "Sneakers"
-  ],
-  [
-    77,
-    "test sneaker",
-    60000,
-    "https://res.cloudinary.com/mnlac0uf/image/upload/v1786247598/okeburjglobal/products/dezne76l1dy2yheokdgm.jpg",
-    "",
-    "Sneakers"
-  ],
-  [
-    78,
-    "test2",
-    70000,
-    "https://res.cloudinary.com/mnlac0uf/image/upload/v1786248076/okeburjglobal/products/hm1hq7oeis2ycxjd8zyd.jpg",
-    "",
-    "Sneakers"
   ]
+  
 ]
