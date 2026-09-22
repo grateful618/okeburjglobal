@@ -67,6 +67,7 @@ class PostgresConnectionWrapper:
     def close(self):
         self.conn.close()
 
+
 import psycopg2
 import psycopg2.extras
 
@@ -75,15 +76,18 @@ class PostgresCursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, vars=None):
-        # Convert SQLite '?' placeholders to PostgreSQL '%s'
-        query = query.replace('?', '%s')
-        
-        # If vars is provided and non-empty
+        # 1. If parameters exist, replace SQLite '?' with psycopg2 '%s'
         if vars is not None and vars != () and vars != []:
+            query = query.replace('?', '%s')
             if not isinstance(vars, (tuple, list, dict)):
                 vars = (vars,)
             return self.cursor.execute(query, vars)
+        
+        # 2. If NO parameters were passed, revert any stray '%s' back to '?' 
+        # or escape '%' so psycopg2 does not fail on raw string execution
         else:
+            # Fix hardcoded or parameterless '%s' strings
+            query = query.replace('%s', '%')
             return self.cursor.execute(query)
 
     def fetchone(self):
@@ -98,7 +102,6 @@ class PostgresConnectionWrapper:
         self.conn = conn
 
     def cursor(self):
-        # Use RealDictCursor so rows behave like dictionaries/sqlite3.Row
         return PostgresCursorWrapper(self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor))
 
     def commit(self):
