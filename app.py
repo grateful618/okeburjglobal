@@ -1,6 +1,7 @@
 import os
 import json
 import sqlite3
+import urllib.parse as urlparse
 
 import cloudinary
 import cloudinary.uploader
@@ -8,6 +9,14 @@ from dotenv import load_dotenv
 
 from flask import Flask, render_template, request, redirect, session, Response, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+
+# Try importing psycopg2 for PostgreSQL on Render
+try:
+    import psycopg2
+    import psycopg2.extras
+except ImportError:
+    psycopg2 = None
+
 
 load_dotenv()
 
@@ -30,12 +39,76 @@ cloudinary.config(
     api_secret=os.environ.get("CLOUDINARY_API_SECRET")
 )
 
+# Grab DATABASE_URL from Render environment
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+class DictRowWrapper:
+    """Wrapper so PostgreSQL database rows act like dictionary objects (same as sqlite3.Row)"""
+    def __init__(self, d):
+        self._d = d
+    def __getitem__(self, key):
+        return self._d[key]
+    def get(self, key, default=None):
+        return self._d.get(key, default)
+    def keys(self):
+        return self._d.keys()
+
+class PostgresConnectionWrapper:
+    """Connection wrapper to map PostgreSQL queries and ? placeholders to psycopg2 format"""
+    def __init__(self, conn):
+        self.conn = conn
+
+    def cursor(self):
+        return PostgresCursorWrapper(self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor))
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
+class PostgresCursorWrapper:
+    def __init__(self, cur):
+        self.cur = cur
+
+    def execute(self, query, vars=None):
+        # Convert sqlite ? placeholders to psycopg2 %s placeholders
+        query_pg = query.replace("?", "%s")
+        # Adjust SQLite AUTOINCREMENT syntax to PostgreSQL SERIAL syntax
+        query_pg = query_pg.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+        if vars is not None:
+            self.cur.execute(query_pg, vars)
+        else:
+            self.cur.execute(query_pg)
+
+    def fetchone(self):
+        row = self.cur.fetchone()
+        return DictRowWrapper(dict(row)) if row else None
+
+    def fetchall(self):
+        rows = self.cur.fetchall()
+        return [DictRowWrapper(dict(r)) for r in rows]
+
+    @property
+    def lastrowid(self):
+        try:
+            self.cur.execute("SELECT LASTVAL()")
+            return self.cur.fetchone()[0]
+        except Exception:
+            return None
+
 
 def get_db_connection():
-    conn = sqlite3.connect("orders.db")
-    conn.row_factory = sqlite3.Row
-    return conn
-
+    if DATABASE_URL and psycopg2:
+        db_url = DATABASE_URL
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        conn = psycopg2.connect(db_url)
+        return PostgresConnectionWrapper(conn)
+    else:
+        conn = sqlite3.connect("orders.db")
+        conn.row_factory = sqlite3.Row
+        return conn
 
 def init_db():
     conn = get_db_connection()
@@ -44,14 +117,14 @@ def init_db():
     # ADMINS TABLE
     c.execute('''
         CREATE TABLE IF NOT EXISTS admins (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL
         )
     ''')
 
-    # Seed default admin ONLY if missing (prevents overwriting changed passwords on restart)
-    c.execute("SELECT id FROM admins WHERE username = 'admin'")
+    # # Seed default admin ONLY if missings
+    c.execute("SELECT id FROM admins WHERE username = %s" if (DATABASE_URL and psycopg2) else "SELECT id FROM admins WHERE username = 'admin'")
     if not c.fetchone():
         c.execute(
             "INSERT INTO admins (username, password) VALUES (?, ?)",
@@ -77,15 +150,16 @@ def init_db():
             image TEXT
         )
     ''')
-
+    
+    # Add columns if missing 
     try:
         c.execute("ALTER TABLE products ADD COLUMN sizes TEXT")
-    except sqlite3.OperationalError:
+    except Exception:
         pass
 
     try:
         c.execute("ALTER TABLE products ADD COLUMN category TEXT")
-    except sqlite3.OperationalError:
+    except Exception:
         pass
 
     conn.commit()
