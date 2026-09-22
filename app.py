@@ -328,7 +328,7 @@ def admin():
 
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT id, name, price, image FROM products")
+    cursor.execute("SELECT id FROM admins WHERE username = ?", (username,))
     products = c.fetchall()
     conn.close()
 
