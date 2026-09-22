@@ -103,7 +103,7 @@ def get_db_connection():
         db_url = DATABASE_URL
         if db_url.startswith("postgres://"):
             db_url = db_url.replace("postgres://", "postgresql://", 1)
-        conn = psycopg2.connect(db_url)
+        conn = psycopg2.connect(db_url, sslmode='require')
         return PostgresConnectionWrapper(conn)
     else:
         conn = sqlite3.connect("orders.db")
