@@ -55,18 +55,23 @@
 		 
 </section>
 
-    <!-- SLIDER -->
+<!-- SLIDER -->
 <section class="carousel">
     <div class="carousel-track">
 
         {% for p in all_products %}
         <div class="slide">
-
             <a href="{{ url_for('product_detail', product_id=p['id']) }}">
-                <img src="{{ p[3]|image_url }}" 
-                alt="{{ p[1] }} - Okeburjglobal fashion product">
+                {% if p['image_url'] %}
+                    {% if p['image_url'].startswith('http://') or p['image_url'].startswith('https://') %}
+                        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ p['image_url'].lstrip('/')) }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
+                    {% endif %}
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
+                {% endif %}
             </a>
-
         </div>
         {% endfor %}
 
@@ -76,30 +81,29 @@
 <!-- PRODUCTS -->
 <section class="featured-section">
     
-	<div class="featured-heading">
-	 
-	     <h2 class="featured-title">
-		       Featured Products
-		 </h2>
-
+    <div class="featured-heading">
+        <h2 class="featured-title">
+            Featured Products
+        </h2>
+    </div>    
     
-    </div>	
-	
-	 
-
     <div class="container">
-         
+        
         {% for p in products %}
         <div class="card">
-
             <a href="{{ url_for('product_detail', product_id=p['id']) }}">
-                <img src="{{ p[3]|image_url }}" 
-                     alt="{{ p[1] }} - Okeburjglobal product"
-                     width="120">
-                <h3>{{ p[1] }}</h3>
-                <p>₦{{ p[2] }}</p>
-            </a>
+                {% if p['image_url'] %}
+                    {% if p['image_url'].startswith('http://') or p['image_url'].startswith('https://') %}
+                        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ p['image_url'].lstrip('/')) }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
+                    {% endif %}
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
+                {% endif %}
 
+                <h3>{{ p['name'] }}</h3>
+                <p>₦{{ p['price'] }}</p>
             <a href="https://wa.me/2349159894649?text={{
              ('Hello Okeburj global!\n\n'
              'I want to order: ' ~ p[1] ~ '\n'
