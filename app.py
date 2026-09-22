@@ -492,6 +492,23 @@ def sync_now():
     rows = [dict(row) for row in c.fetchall()]
     conn.close()
     return {"message": "Database sync executed!", "latest_10_products": rows}
+    
+with app.app_context():
+    try:
+        db.create_all()
+        
+        # Check if products table is empty before running heavy import
+        from app import Product, import_products  # adjust model name if different
+        
+        if Product.query.count() == 0:
+            print("Database is empty. Importing products from JSON...")
+            import_products()
+            print("Import complete!")
+        else:
+            print("Products already exist. Skipping import.")
+            
+    except Exception as e:
+        print(f"Startup initialization note: {e}")    
 
 
 @app.route("/sitemap.xml")
@@ -544,6 +561,8 @@ Disallow: /order
 Sitemap: https://okeburjglobal-1.onrender.com/sitemap.xml
 """
     return Response(robots_txt, mimetype="text/plain")
+    
+    
 
 
 if __name__ == "__main__":
