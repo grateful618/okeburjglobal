@@ -72,16 +72,16 @@ class PostgresConnectionWrapper:
         self.conn = conn
 
     def cursor(self):
-        # DictCursor allows accessing columns by name e.g., p['name']
         cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        
-        # Intercept execute calls to automatically swap ? with %s
         orig_execute = cur.execute
-        def execute_wrapper(query, vars=None):
+
+        def execute_wrapper(query, vars=None, *args, **kwargs):
             if isinstance(query, str):
                 query = query.replace('?', '%s')
-            return orig_execute(query, vars)
-        
+            if vars is not None:
+                return orig_execute(query, vars, *args, **kwargs)
+            return orig_execute(query, *args, **kwargs)
+
         cur.execute = execute_wrapper
         return cur
 
