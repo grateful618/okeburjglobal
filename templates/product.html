@@ -44,14 +44,11 @@
 
         {% set image_url = url_for('static', filename='images/' ~ product['image'], _external=True) %}
 
-    <a href="https://wa.me/2349159894649?text={{
-       ('Hello Okeburjglobal!\n\n'
-        'I want to order: ' ~ product['name'] ~ '\n'
-        'Price: ₦' ~ product['price'] ~ '\n'
-        'Product image: ' ~ image_url
-       ) | urlencode
-    }}" target="_blank">
-    <button class="order-btn">Order on WhatsApp 📱</button>
+    
+	{% set message = "Hello Okeburjglobal!\n\nI want to order: " ~ product['name'] ~ "\nPrice: ₦" ~ product['price'] ~ "\nProduct image: " ~ image_url %}
+
+    <a href="https://wa.me/2349159894649?text={{ message | urlencode }}" target="_blank" class="whatsapp-btn">
+        Order on WhatsApp
     </a>
 
     </div>
