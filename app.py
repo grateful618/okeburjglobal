@@ -66,18 +66,30 @@ class PostgresCursorWrapper:
         return self.cursor.fetchall()
 
 
+
 class PostgresConnectionWrapper:
     def __init__(self, conn):
         self.conn = conn
 
     def cursor(self):
-        return PostgresCursorWrapper(self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor))
+        # DictCursor allows accessing columns by name e.g., p['name']
+        cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Intercept execute calls to automatically swap ? with %s
+        orig_execute = cur.execute
+        def execute_wrapper(query, vars=None):
+            if isinstance(query, str):
+                query = query.replace('?', '%s')
+            return orig_execute(query, vars)
+        
+        cur.execute = execute_wrapper
+        return cur
 
     def commit(self):
-        self.conn.commit()
+        return self.conn.commit()
 
     def close(self):
-        self.conn.close()
+        return self.conn.close()
 
 
 def get_db_connection():
@@ -98,6 +110,7 @@ def init_db():
     c = conn.cursor()
 
     is_postgres = bool(DATABASE_URL and psycopg2)
+    param = "%s" if is_postgres else "?"
 
     # ADMINS TABLE
     if is_postgres:
@@ -117,11 +130,11 @@ def init_db():
             )
         ''')
 
-    # Seed default admin if missing
-    c.execute("SELECT id FROM admins WHERE username = ?", ("admin",))
+    # Seed default admin if missing using dynamic parameter syntax
+    c.execute(f"SELECT id FROM admins WHERE username = {param}", ("admin",))
     if not c.fetchone():
         c.execute(
-            "INSERT INTO admins (username, password) VALUES (?, ?)",
+            f"INSERT INTO admins (username, password) VALUES ({param}, {param})",
             ("admin", generate_password_hash("10423"))
         )
 
@@ -171,7 +184,6 @@ def init_db():
 
     conn.commit()
     conn.close()
-
 
 def import_products():
     if not os.path.exists("products_backup.json"):
