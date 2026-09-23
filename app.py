@@ -395,10 +395,11 @@ def edit_product(product_id):
 
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
+    if not session.get("admin"):
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         name = request.form.get('name')
-        
-        # Safely parse price into an integer (stripping commas/currency symbols)
         raw_price = request.form.get('price', '0')
         try:
             price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
@@ -411,13 +412,8 @@ def add_product():
 
         conn = get_db_connection()
         c = conn.cursor()
-        
-        # Execute parameterized INSERT query
         c.execute(
-            """
-            INSERT INTO products (name, price, image, sizes, category)
-            VALUES (?, ?, ?, ?, ?)
-            """,
+            "INSERT INTO products (name, price, image, sizes, category) VALUES (?, ?, ?, ?, ?)",
             (name, price, image, sizes, category)
         )
         conn.commit()
