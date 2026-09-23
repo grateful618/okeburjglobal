@@ -393,43 +393,39 @@ def edit_product(product_id):
     return render_template("edit_product.html", product=product)
 
 
-@app.route("/add_product", methods=["GET", "POST"])
+@app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
-    if not session.get("admin"):
-        return redirect("/login")
+    if request.method == 'POST':
+        name = request.form.get('name')
+        
+        # Safely parse price into an integer (stripping commas/currency symbols)
+        raw_price = request.form.get('price', '0')
+        try:
+            price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
+        except (ValueError, TypeError):
+            price = 0
 
-    if request.method == "POST":
-        name = request.form["name"]
-        price = request.form["price"]
-        category = request.form["category"]
-        image = request.files.get("image")
-        sizes = request.form.get("sizes", "")
-
-        if not image or image.filename == "":
-            return render_template("add_product.html", error="Please upload a valid image.")
-
-        upload_result = cloudinary.uploader.upload(
-            image,
-            folder="okeburjglobal/products"
-        )
-
-        image_url = upload_result["secure_url"]
+        image = request.form.get('image', '').strip()
+        sizes = request.form.get('sizes', '').strip()
+        category = request.form.get('category', '').strip()
 
         conn = get_db_connection()
         c = conn.cursor()
-
-        c.execute("""
+        
+        # Execute parameterized INSERT query
+        c.execute(
+            """
             INSERT INTO products (name, price, image, sizes, category)
             VALUES (?, ?, ?, ?, ?)
-        """, (name, price, image_url, sizes, category))
-
+            """,
+            (name, price, image, sizes, category)
+        )
         conn.commit()
         conn.close()
 
-        return redirect("/admin")
+        return redirect(url_for('admin'))
 
-    return render_template("add_product.html")
-
+    return render_template('add_product.html')
 
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
