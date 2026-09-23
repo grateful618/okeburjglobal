@@ -77,45 +77,52 @@
 </head>
 <body>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
 <div class="admin-container">
 
     <div class="top-bar">
-    <h1>Admin Dashboard</h1>
+        <h1>Admin Dashboard</h1>
 
-    <div class="admin-menu">
-        <a href="/add_product" class="add-btn">➕ Add Product</a>
-        <a href="/dashboard" class="add-btn">📋 Orders</a>
-        <a href="/change_password" class="add-btn">🔒 Change Password</a>
-        <a href="/logout" class="add-btn">🚪 Logout</a>
+        <div class="admin-menu">
+            <a href="/add_product" class="add-btn">➕ Add Product</a>
+            <a href="/dashboard" class="add-btn">📋 Orders</a>
+            <a href="/change_password" class="add-btn">🔒 Change Password</a>
+            <a href="/logout" class="add-btn">🚪 Logout</a>
+        </div>
     </div>
-</div>
     
-	<hr>
+    <hr>
 
-    {% if p['image'] and p['image'].startswith('http') %}
+    {% for p in products %}
     <div class="product-card">
 
-        <img src="{{ p['image'] }}" alt="Product Image">
-    {% else %}
-        <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="Product Image">
-    {% endif %}
+        {% if p['image'] and p['image'].startswith('http') %}
+            <img src="{{ p['image'] }}" alt="Product Image">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="Product Image">
+        {% endif %}
 
         <div>
             <h3>{{ p['name'] }}</h3>
             <p>₦{{ p['price'] }}</p>
-            
         </div>
 
         <div class="actions">
-
             <a href="/edit_product/{{ p['id'] }}">
                 <button class="edit-btn">Edit ✏️</button>
-           
+            </a>
 
             <a href="/delete_product/{{ p['id'] }}">
                 <button class="delete-btn">Delete 🗑️</button>
             </a>
-
         </div>
 
     </div>
