@@ -574,9 +574,13 @@ Sitemap: https://okeburjglobal-1.onrender.com/sitemap.xml
 """
     return Response(robots_txt, mimetype="text/plain")
     
+with app.app_context():
+    try:
+        init_db()
+    except Exception as e:
+        print(f"Startup DB Init Warning: {e}")    
     
-
-
+    
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
