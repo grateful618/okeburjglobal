@@ -102,31 +102,33 @@
     <hr>
 
     {% for p in products %}
-    <div class="product-card">
+<div class="product-card">
 
-        {% if p['image'] and p['image'].startswith('http') %}
-            <img src="{{ p['image'] }}" alt="Product Image">
-        {% else %}
-            <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="Product Image">
-        {% endif %}
+    {% if p['image'] and p['image'] is string and p['image'].startswith('http') %}
+        <img src="{{ p['image'] }}" alt="Product Image">
+    {% elif p['image'] %}
+        <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="Product Image">
+    {% else %}
+        <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Default Product Image">
+    {% endif %}
 
-        <div>
-            <h3>{{ p['name'] }}</h3>
-            <p>₦{{ p['price'] }}</p>
-        </div>
-
-        <div class="actions">
-            <a href="/edit_product/{{ p['id'] }}">
-                <button class="edit-btn">Edit ✏️</button>
-            </a>
-
-            <a href="/delete_product/{{ p['id'] }}">
-                <button class="delete-btn">Delete 🗑️</button>
-            </a>
-        </div>
-
+    <div>
+        <h3>{{ p['name'] or 'Unnamed Product' }}</h3>
+        <p>₦{{ p['price'] or 0 }}</p>
     </div>
-    {% endfor %}
+
+    <div class="actions">
+        <a href="/edit_product/{{ p['id'] }}">
+            <button class="edit-btn">Edit ✏️</button>
+        </a>
+
+        <a href="/delete_product/{{ p['id'] }}">
+            <button class="delete-btn">Delete 🗑️</button>
+        </a>
+    </div>
+
+</div>
+{% endfor %}
 
 </div>
 

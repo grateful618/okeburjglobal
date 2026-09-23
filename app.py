@@ -399,7 +399,9 @@ def add_product():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        name = request.form.get('name')
+        name = request.form.get('name', '').strip()
+        
+        # Safely convert price string to integer
         raw_price = request.form.get('price', '0')
         try:
             price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
@@ -413,7 +415,10 @@ def add_product():
         conn = get_db_connection()
         c = conn.cursor()
         c.execute(
-            "INSERT INTO products (name, price, image, sizes, category) VALUES (?, ?, ?, ?, ?)",
+            """
+            INSERT INTO products (name, price, image, sizes, category)
+            VALUES (?, ?, ?, ?, ?)
+            """,
             (name, price, image, sizes, category)
         )
         conn.commit()
