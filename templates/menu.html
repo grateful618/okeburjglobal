@@ -49,21 +49,22 @@
         {% for p in products %}
         <div class="card">
 
-    {% if p[3].startswith('http') %}
-        {% set image_url = p[3] %}
-        <img src="{{ p[3] }}">
+    {% if p['image'] %}
+    {% if p['image'].startswith('http') %}
+        <img src="{{ p['image'] }}" alt="{{ p['name'] }}">
     {% else %}
-        {% set image_url = url_for('static', filename='images/' ~ p[3], _external=True) %}
-        <img src="{{ p[3] if p[3].startswith('http') else url_for('static', filename='images/' + p[3]) }}" alt="Product Image">
+        <img src="{{ url_for('static', filename='images/' ~ p['image'].lstrip('/')) }}" alt="{{ p['name'] }}">
     {% endif %}
+{% else %}
+    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Product Image">
+{% endif %}
 
-    <h3>{{ p[1] }}</h3>
-    <p>₦{{ p[2] }}</p>
+<h3>{{ p['name'] }}</h3>
+<p>₦{{ p['price'] }}</p>
 
-    <a href="https://wa.me/2349159894649?text={{
-        ('Hello Okeburjglobal!\n\n'
-         'I want to order: ' ~ p[1] ~ '\n'
-         'Price: ₦' ~ p[2] ~ '\n'
+<!-- WhatsApp Order Text -->
+'I want to order: ' ~ p['name'] ~ '\n'
+'Price: ₦' ~ p['price'] ~ '\n'
          'Product image: ' ~ image_url
         ) | urlencode
     }}" target="_blank">

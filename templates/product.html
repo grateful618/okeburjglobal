@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ product[1] }}</title>
+    <title>{{ product['name'] }} | Okeburjglobal Fashion Store Nigeria</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -10,7 +10,7 @@
     <head>
     <title>{{ product[1] }} | Okeburjglobal Fashion Store Nigeria</title>
 
-    <meta name="description" content="Buy {{ product[1] }} from Okeburjglobal. Quality fashion products available in Nigeria. Price ₦{{ product[2] }}. Order easily on WhatsApp.">
+    <meta name="description" content="Buy {{ product['name'] }} from Okeburjglobal. Quality fashion products available in Nigeria. Price ₦{{ product['price'] }}. Order easily on WhatsApp.">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -27,28 +27,27 @@
 
     <div class="product-card">
 
-        <img src="{{ product[3]|image_url }}"
-             alt="{{ product[1] }} - Okeburjglobal fashion product Nigeria">
+        <img src="{{ product['image']|image_url }}" alt="{{ product['name'] }} - Okeburjglobal fashion product Nigeria">
+        
+		<h2>{{ product['name'] }} - Available in Nigeria</h2>
+        <h3>₦{{ product['price'] }}</h3>
 
-        <h2>{{ product[1] }} - Available in Nigeria</h2>
-        <h3>₦{{ product[2] }}</h3>
-
-        {% if product[4] %}
+        {% if product['sizes'] %}
         <h4>Available sizes:</h4>
 
         <div class="sizes">
-            {% for size in product[4].split(",") %}
-                <span class="size-box">{{ size }}</span>
+            {% for size in product['sizes'].split(",") %}
+                <span class="size-tag">{{ size }}</span>
             {% endfor %}
         </div>
         {% endif %}
 
-        {% set image_url = url_for('static', filename='images/' ~ product[3], _external=True) %}
+        {% set image_url = url_for('static', filename='images/' ~ product['image'], _external=True) %}
 
     <a href="https://wa.me/2349159894649?text={{
        ('Hello Okeburjglobal!\n\n'
-        'I want to order: ' ~ product[1] ~ '\n'
-        'Price: ₦' ~ product[2] ~ '\n'
+        'I want to order: ' ~ product['name'] ~ '\n'
+        'Price: ₦' ~ product['price'] ~ '\n'
         'Product image: ' ~ image_url
        ) | urlencode
     }}" target="_blank">

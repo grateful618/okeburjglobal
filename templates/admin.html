@@ -92,14 +92,18 @@
     
 	<hr>
 
-    {% for p in products %}
+    {% if p['image'] and p['image'].startswith('http') %}
     <div class="product-card">
 
-        <img src="{{ p[3] if p[3].startswith('http') else url_for('static', filename='images/' + p[3]) }}" alt="Product Image">
+        <img src="{{ p['image'] }}" alt="Product Image">
+    {% else %}
+        <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="Product Image">
+    {% endif %}
 
         <div>
-            <h3>{{ p[1] }}</h3>
-            <p>₦{{ p[2] }}</p>
+            <h3>{{ p['name'] }}</h3>
+            <p>₦{{ p['price'] }}</p>
+            
         </div>
 
         <div class="actions">
