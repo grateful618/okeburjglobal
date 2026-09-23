@@ -62,15 +62,15 @@
         {% for p in all_products %}
         <div class="slide">
             <a href="{{ url_for('product_detail', product_id=p['id']) }}">
-                {% if p['image_url'] %}
-                    {% if p['image_url'].startswith('http://') or p['image_url'].startswith('https://') %}
-                        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='uploads/' ~ p['image_url'].lstrip('/')) }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
-                    {% endif %}
+            {% if p['image'] %}
+                {% if p['image'].startswith('http://') or p['image'].startswith('https://') %}
+                    <img src="{{ p['image'] }}" alt="{{ p['name'] }}">
                 {% else %}
-                    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="{{ p['name'] }} - Okeburjglobal fashion product">
+                    <img src="{{ url_for('static', filename='images/' ~ p['image'].lstrip('/')) }}" alt="{{ p['name'] }}">
                 {% endif %}
+            {% else %}
+               <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Default Image">
+            {% endif %}
             </a>
         </div>
         {% endfor %}
@@ -92,25 +92,23 @@
         {% for p in products %}
         <div class="card">
             <a href="{{ url_for('product_detail', product_id=p['id']) }}">
-                {% if p['image_url'] %}
-                    {% if p['image_url'].startswith('http://') or p['image_url'].startswith('https://') %}
-                        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='uploads/' ~ p['image_url'].lstrip('/')) }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
-                    {% endif %}
+                {% if p['image'] %}
+                {% if p['image'].startswith('http://') or p['image'].startswith('https://') %}
+                    <img src="{{ p['image'] }}" alt="{{ p['name'] }}">
                 {% else %}
-                    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="{{ p['name'] }} - Okeburjglobal product" width="120">
+                    <img src="{{ url_for('static', filename='images/' ~ p['image'].lstrip('/')) }}" alt="{{ p['name'] }}">
                 {% endif %}
-
+            {% else %}
+               <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Default Image">
+            {% endif %}
                 <h3>{{ p['name'] }}</h3>
                 <p>₦{{ p['price'] }}</p>
             {% set image_url = p['image'] if p['image'].startswith('http') else url_for('static', filename='images/' ~ p['image'], _external=True) %}
             {% set wa_message = "Hello Okeburjglobal!\n\nI want to order: " ~ p['name'] ~ "\nPrice: ₦" ~ p['price'] ~ "\nProduct image: " ~ image_url %}
 
-            <a href="https://wa.me/2349159894649?text={{ wa_message | urlencode }}" target="_blank" class="whatsapp-btn">
+            <a href="https://wa.me/234XXXXXXXXXX?text={{ wa_message | urlencode }}" target="_blank" class="whatsapp-btn">
                 Order on WhatsApp
             </a>
-
         </div>
         {% endfor %}
 
