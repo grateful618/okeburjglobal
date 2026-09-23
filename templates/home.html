@@ -104,14 +104,11 @@
 
                 <h3>{{ p['name'] }}</h3>
                 <p>₦{{ p['price'] }}</p>
-            <a href="https://wa.me/2349159894649?text={{
-             ('Hello Okeburj global!\n\n'
-             'I want to order: ' ~ p['name'] ~ '\n'
-             'Price: ₦' ~ p['price'] ~ '\n'
-             'https://okeburjglobal-1.onrender.com/static/images/' ~ p['image']
-             ) | urlencode
-             }}" target="_blank">
-             <button class="home-order-btn">Order on WhatsApp 📱</button>
+            {% set image_url = p['image'] if p['image'].startswith('http') else url_for('static', filename='images/' ~ p['image'], _external=True) %}
+            {% set wa_message = "Hello Okeburjglobal!\n\nI want to order: " ~ p['name'] ~ "\nPrice: ₦" ~ p['price'] ~ "\nProduct image: " ~ image_url %}
+
+            <a href="https://wa.me/2349159894649?text={{ wa_message | urlencode }}" target="_blank" class="whatsapp-btn">
+                Order on WhatsApp
             </a>
 
         </div>
