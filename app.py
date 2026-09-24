@@ -399,7 +399,7 @@ def add_product():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        name = request.form.get('name', '').strip()
+        name = request.form.get('name', 'Unnamed Product').strip()
         
         # Safely convert price string to integer
         raw_price = request.form.get('price', '0')
