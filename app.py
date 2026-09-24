@@ -345,8 +345,11 @@ def admin():
     products = c.fetchall()
     conn.close()
 
-    return render_template("admin.html", products=products)
+    # Safe debug log to inspect database image values on Render
+    for p in products:
+        print(f"DEBUG ADMIN -> ID: {p['id']} | Name: {p['name']} | Image Value: '{p['image']}'")
 
+    return render_template("admin.html", products=products)
 
 @app.route("/delete_product/<int:product_id>")
 def delete_product(product_id):
@@ -392,16 +395,15 @@ def edit_product(product_id):
 
     return render_template("edit_product.html", product=product)
 
-
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     if not session.get("admin"):
-        return redirect(url_for('login'))
+        return redirect('/login')
 
     if request.method == 'POST':
         name = request.form.get('name', 'Unnamed Product').strip()
         
-        # Parse price securely
+        # Parse price safely
         raw_price = request.form.get('price', '0')
         try:
             price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
@@ -413,15 +415,15 @@ def add_product():
         
         image_url = ""
 
-        # 1. Handle Direct File Upload via Cloudinary
+        # Check for uploaded file via Cloudinary
         image_file = request.files.get('image_file')
         if image_file and image_file.filename != '':
             upload_result = cloudinary.uploader.upload(image_file)
-            image_url = upload_result.get('secure_url')
-        
-        # 2. Fallback to manual URL string if no file was uploaded
+            image_url = upload_result.get('secure_url', '')
+
+        # Fallback if an external URL string was manually entered
         if not image_url:
-            image_url = request.form.get('image_url', '').strip()
+            image_url = request.form.get('image', '').strip()
 
         conn = get_db_connection()
         c = conn.cursor()
@@ -435,7 +437,7 @@ def add_product():
         conn.commit()
         conn.close()
 
-        return redirect(url_for('admin'))
+        return redirect('/admin')
 
     return render_template('add_product.html')
 
