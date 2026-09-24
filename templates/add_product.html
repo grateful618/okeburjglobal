@@ -7,37 +7,28 @@
 
 <h1>Add Product</h1>
 
-<form method="POST" action="/add_product">
+<form method="POST" action="/add_product" enctype="multipart/form-data">
+    <label for="name">Product Name:</label>
+    <input type="text" name="name" required>
 
-    <input type="text" name="name" placeholder="Product Name" required>
-    <br><br>
-	
-	<label>Category:</label><br>
+    <label for="price">Price (₦):</label>
+    <input type="text" name="price" required>
 
-    <select name="category" required>
-        <option value="">-- Select Category --</option>
-        <option value="Sneakers">Sneakers</option>
-        <option value="Handbags">Handbags</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Wigs">Wigs</option>
-        <option value="Accessories">Accessories</option>
-    </select>
+    <label for="image_file">Upload Product Photo from Device:</label>
+    <input type="file" name="image_file" accept="image/*">
 
-    <br><br>
+    <p style="text-align: center; margin: 10px 0;"><strong>OR</strong></p>
 
-    <label>Sizes (for sneakers only):</label><br>
-    <input type="text" name="sizes" placeholder="e.g. 40,41,42,43,44,45,46,47">
-    <br><br>
+    <label for="image_url">Paste Image URL (Optional):</label>
+    <input type="text" name="image_url" placeholder="https://...">
 
-    <input type="number" name="price" placeholder="Price" required>
-    <br><br>
+    <label for="sizes">Available Sizes:</label>
+    <input type="text" name="sizes" placeholder="e.g. 40, 41, 42, 43">
 
-    <label>Product Image:</label><br>
-    <input type="file" name="image" accept="image/*" required>
-    <br><br>
+    <label for="category">Category:</label>
+    <input type="text" name="category" placeholder="e.g. Sneakers">
 
-    <button type="submit">Save Product</button>
-
+    <button type="submit">Add Product</button>
 </form>
 
 </body>

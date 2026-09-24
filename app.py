@@ -401,16 +401,27 @@ def add_product():
     if request.method == 'POST':
         name = request.form.get('name', 'Unnamed Product').strip()
         
-        # Safely convert price string to integer
+        # Parse price securely
         raw_price = request.form.get('price', '0')
         try:
             price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
         except (ValueError, TypeError):
             price = 0
 
-        image = request.form.get('image', '').strip()
         sizes = request.form.get('sizes', '').strip()
         category = request.form.get('category', '').strip()
+        
+        image_url = ""
+
+        # 1. Handle Direct File Upload via Cloudinary
+        image_file = request.files.get('image_file')
+        if image_file and image_file.filename != '':
+            upload_result = cloudinary.uploader.upload(image_file)
+            image_url = upload_result.get('secure_url')
+        
+        # 2. Fallback to manual URL string if no file was uploaded
+        if not image_url:
+            image_url = request.form.get('image_url', '').strip()
 
         conn = get_db_connection()
         c = conn.cursor()
@@ -419,7 +430,7 @@ def add_product():
             INSERT INTO products (name, price, image, sizes, category)
             VALUES (?, ?, ?, ?, ?)
             """,
-            (name, price, image, sizes, category)
+            (name, price, image_url, sizes, category)
         )
         conn.commit()
         conn.close()
