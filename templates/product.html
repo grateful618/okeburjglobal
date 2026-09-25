@@ -25,45 +25,43 @@
 
 <div class="product-card">
 
-        <!-- Handle Cloudinary HTTPS URLs and Fallback to Local Files -->
-        {% if product['image'] and 'http' in product['image'] %}
-            <img src="{{ product['image'] }}" alt="{{ product['name'] }} - Okeburjglobal fashion product Nigeria">
-            {% set whatsapp_image_url = product['image'] %}
-        {% elif product['image'] %}
-            <img src="{{ url_for('static', filename='images/' ~ product['image']) }}" alt="{{ product['name'] }} - Okeburjglobal fashion product Nigeria">
-            {% set whatsapp_image_url = url_for('static', filename='images/' ~ product['image'], _external=True) %}
-        {% else %}
-            <div style="width: 100%; height: 250px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #777; border-radius: 8px;">
-                No Image Available
-            </div>
-            {% set whatsapp_image_url = '' %}
-        {% endif %}
-        
-        <h2>{{ product['name'] }} - Available in Nigeria</h2>
-        <h3>₦{{ product['price'] }}</h3>
+    <!-- Use a namespace object so setting variables inside if-blocks persists outside -->
+    {% set ns = namespace(whatsapp_image_url='') %}
 
-        {% if product['sizes'] %}
-        <h4>Available sizes:</h4>
-
-        <div class="sizes">
-            {% for size in product['sizes'].split(",") %}
-                <span class="size-tag">{{ size }}</span>
-            {% endfor %}
+    {% if product['image'] and 'http' in product['image'] %}
+        {% set ns.whatsapp_image_url = product['image'] %}
+        <img src="{{ product['image'] }}" alt="{{ product['name'] }} - Okeburjglobal fashion product Nigeria">
+    {% elif product['image'] %}
+        {% set ns.whatsapp_image_url = url_for('static', filename='images/' ~ product['image'], _external=True) %}
+        <img src="{{ url_for('static', filename='images/' ~ product['image']) }}" alt="{{ product['name'] }} - Okeburjglobal fashion product Nigeria">
+    {% else %}
+        {% set ns.whatsapp_image_url = '' %}
+        <div style="width: 100%; height: 250px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #777; border-radius: 8px;">
+            No Image Available
         </div>
-        {% endif %}
+    {% endif %}
+    
+    <h2>{{ product['name'] }} - Available in Nigeria</h2>
+    <h3>₦{{ product['price'] }}</h3>
 
-        {% set message = "Hello Okeburjglobal!\n\nI want to order: " ~ product['name'] ~ "\nPrice: ₦" ~ product['price'] ~ "\nProduct image: " ~ whatsapp_image_url %}
+    {% if product['sizes'] %}
+    <h4>Available sizes:</h4>
 
-        <a href="https://wa.me/2349159894649?text={{ message | urlencode }}" target="_blank" class="whatsapp-btn">
-            Order on WhatsApp
-        </a>
-
+    <div class="sizes">
+        {% for size in product['sizes'].split(",") %}
+            <span class="size-tag">{{ size }}</span>
+        {% endfor %}
     </div>
- 
+    {% endif %}
+
+    {% set message = "Hello Okeburjglobal!\n\nI want to order: " ~ product['name'] ~ "\nPrice: ₦" ~ product['price'] ~ "\nProduct image: " ~ ns.whatsapp_image_url %}
+
+    <a href="https://wa.me/2349159894649?text={{ message | urlencode }}" target="_blank" class="whatsapp-btn">
+        Order on WhatsApp
+    </a>
+
 </div>
 
 </body>
 </html>
 
-</body>
-</html>
