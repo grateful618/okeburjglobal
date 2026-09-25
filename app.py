@@ -374,24 +374,46 @@ def edit_product(product_id):
     c = conn.cursor()
 
     if request.method == "POST":
-        name = request.form["name"]
-        price = request.form["price"]
-        image = request.form["image"]
+        name = request.form.get("name", "").strip()
+        
+        # Parse price safely
+        raw_price = request.form.get("price", "0")
+        try:
+            price = int(str(raw_price).replace(',', '').replace('₦', '').strip())
+        except (ValueError, TypeError):
+            price = 0
 
-        c.execute("""
-            UPDATE products
-            SET name = ?, price = ?, image = ?
+        sizes = request.form.get("sizes", "").strip()
+        category = request.form.get("category", "").strip()
+        
+        # Start with existing image URL
+        image_url = request.form.get("existing_image", "").strip()
+
+        # Check if user uploaded a new image file
+        image_file = request.files.get("image_file")
+        if image_file and image_file.filename != '':
+            upload_result = cloudinary.uploader.upload(image_file)
+            image_url = upload_result.get('secure_url', image_url)
+
+        c.execute(
+            """
+            UPDATE products 
+            SET name = ?, price = ?, image = ?, sizes = ?, category = ?
             WHERE id = ?
-        """, (name, price, image, product_id))
-
+            """,
+            (name, price, image_url, sizes, category, product_id)
+        )
         conn.commit()
         conn.close()
 
         return redirect("/admin")
 
-    c.execute("SELECT id, name, price, image FROM products WHERE id = ?", (product_id,))
+    c.execute("SELECT id, name, price, image, sizes, category FROM products WHERE id = ?", (product_id,))
     product = c.fetchone()
     conn.close()
+
+    if not product:
+        return "Product not found", 404
 
     return render_template("edit_product.html", product=product)
 
